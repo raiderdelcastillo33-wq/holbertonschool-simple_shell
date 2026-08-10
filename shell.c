@@ -1,6 +1,5 @@
 #include "shell.h"
 
-#define SHELL_EXIT 256
 
 /**
  * parse_arguments - splits a command line into arguments
@@ -87,14 +86,18 @@ int execute_command(char **args, char *program_name)
  * handle_builtin - handles shell built-in commands
  * @args: NULL-terminated argument vector
  *
+ * @program_name: shell program name used in errors
+ * @last_status: status of the previous command
+ * @exit_status: status to return when exiting
  * Return: built-in status, or -1 if command is not a built-in
  */
-static int handle_builtin(char **args)
+static int handle_builtin(char **args, char *program_name,
+	int last_status, int *exit_status)
 {
 	int index = 0;
 
 	if (strcmp(args[0], "exit") == 0)
-		return (SHELL_EXIT);
+		return (handle_exit(args, program_name, last_status, exit_status));
 
 	if (strcmp(args[0], "env") == 0)
 	{
@@ -115,9 +118,11 @@ static int handle_builtin(char **args)
  * @program_name: shell program name used for errors
  * @last_status: status before processing the current line
  *
+ * @exit_status: status to return when exit is requested
  * Return: resulting shell status
  */
-static int process_line(char *line, char *program_name, int last_status)
+static int process_line(char *line, char *program_name, int last_status,
+	int *exit_status)
 {
 	char **args;
 	char *resolved;
@@ -135,7 +140,7 @@ static int process_line(char *line, char *program_name, int last_status)
 		return (last_status);
 	}
 
-	status = handle_builtin(args);
+	status = handle_builtin(args, program_name, last_status, exit_status);
 	if (status != -1)
 	{
 		free(args);
@@ -169,11 +174,9 @@ int main(int argc, char **argv)
 	char *line = NULL;
 	ssize_t read_count;
 	int interactive;
-	int last_status = 0;
-	int command_status;
+	int last_status = 0, exit_status = 0, command_status;
 	(void)argc;
 	interactive = isatty(STDIN_FILENO);
-
 	while (1)
 	{
 		if (interactive)
@@ -181,7 +184,6 @@ int main(int argc, char **argv)
 			printf("#cisfun$ ");
 			fflush(stdout);
 		}
-
 		read_count = shell_getline(&line);
 		if (read_count == -1)
 		{
@@ -191,19 +193,18 @@ int main(int argc, char **argv)
 		}
 		if (read_count == 0)
 			break;
-
 		if (read_count > 0 && line[read_count - 1] == '\n')
 			line[read_count - 1] = '\0';
-
-		command_status = process_line(line, argv[0], last_status);
+		command_status = process_line(line, argv[0], last_status, &exit_status);
 		free(line);
 		line = NULL;
 		if (command_status == SHELL_EXIT)
+		{
+			last_status = exit_status;
 			break;
-
+		}
 		last_status = command_status;
 	}
-
 	free(line);
 	return (last_status);
 }

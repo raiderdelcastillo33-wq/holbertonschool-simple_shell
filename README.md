@@ -85,9 +85,12 @@ The current implementation can:
 - wait for the child process with `waitpid`
 - propagate the child process exit status
 - handle empty input lines and end-of-file input
-- handle the built-in `exit` command without arguments
-- stop the shell immediately when `exit` is entered
-- preserve the last command status when leaving through `exit`
+- handle the built-in `exit` command with or without a numeric status argument
+- stop the shell immediately when a valid `exit` command is entered
+- preserve the last command status when leaving through `exit` without an argument
+- convert a valid numeric `exit` argument to the effective process exit status
+- report invalid numeric `exit` arguments and numeric overflow as errors
+- reject extra `exit` arguments without terminating the shell immediately
 - handle the built-in `env` command
 - print the current environment, one variable per line
 - handle `exit` and `env` internally before command lookup through `PATH`
