@@ -83,6 +83,32 @@ int execute_command(char **args, char *program_name)
 }
 
 /**
+ * handle_builtin - handles shell built-in commands
+ * @args: NULL-terminated argument vector
+ *
+ * Return: built-in status, or -1 if command is not a built-in
+ */
+static int handle_builtin(char **args)
+{
+	int index = 0;
+
+	if (strcmp(args[0], "exit") == 0)
+		return (SHELL_EXIT);
+
+	if (strcmp(args[0], "env") == 0)
+	{
+		while (environ[index] != NULL)
+		{
+			printf("%s\n", environ[index]);
+			index++;
+		}
+		return (0);
+	}
+
+	return (-1);
+}
+
+/**
  * process_line - parses, resolves and executes one command line
  * @line: command line to process
  * @program_name: shell program name used for errors
@@ -108,10 +134,11 @@ static int process_line(char *line, char *program_name, int last_status)
 		return (last_status);
 	}
 
-	if (strcmp(args[0], "exit") == 0)
+	status = handle_builtin(args);
+	if (status != -1)
 	{
 		free(args);
-		return (SHELL_EXIT);
+		return (status);
 	}
 
 	resolved = resolve_command(args[0]);

@@ -66,7 +66,7 @@ We approach each task using the following sequence:
 ## Current state
 
 The repository contains the functional version developed for Simple Shell
-0.4.
+1.0.
 
 The current implementation can:
 
@@ -87,10 +87,13 @@ The current implementation can:
 - handle the built-in `exit` command without arguments
 - stop the shell immediately when `exit` is entered
 - preserve the last command status when leaving through `exit`
+- handle the built-in `env` command
+- print the current environment, one variable per line
+- handle `exit` and `env` internally before command lookup through `PATH`
 
-At this stage only the `exit` built-in required by Simple Shell 0.4 is
-implemented. Other built-in commands belong to later project requirements
-and are not documented as implemented yet.
+At this stage the built-ins implemented for Simple Shell 1.0 are `exit` and
+`env`. Other built-in commands belong to later project requirements and are
+not documented as implemented yet.
 
 ## Documentation
 
@@ -99,7 +102,7 @@ This repository currently contains:
 - README.md - project overview and evolving technical documentation
 - man_1_simple_shell - manual page for the Simple Shell project
 - AUTHORS - project contributors
-- shell.c - Simple Shell 0.4 parsing, built-in exit handling, execution loop, and process handling
+- shell.c - Simple Shell 1.0 parsing, built-in exit and env handling, execution loop, and process handling
 - path.c - command resolution through PATH
 - shell.h - shared declarations and required headers
 
