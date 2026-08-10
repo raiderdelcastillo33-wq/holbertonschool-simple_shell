@@ -66,7 +66,7 @@ We approach each task using the following sequence:
 ## Current state
 
 The repository contains the functional version developed for Simple Shell
-0.2.
+0.3.
 
 The current implementation can:
 
@@ -76,16 +76,18 @@ The current implementation can:
 - split command lines into arguments
 - build a NULL-terminated argument vector for `execve`
 - execute commands provided with their full path
+- resolve commands through the `PATH` environment variable
 - pass command arguments and options to executed programs
-- create a child process with `fork`
+- avoid creating a child process when a command cannot be resolved
+- create a child process with `fork` only for a valid executable command
 - execute programs with `execve`
 - wait for the child process with `waitpid`
 - propagate the child process exit status
 - handle empty input lines and end-of-file input
 
-At this stage the shell intentionally does not search commands through
-`PATH` or implement built-in commands. Those features belong to later
-project requirements and are not documented as implemented yet.
+At this stage the shell intentionally does not implement built-in commands.
+Those features belong to later project requirements and are not documented
+as implemented yet.
 
 ## Documentation
 
@@ -94,7 +96,8 @@ This repository currently contains:
 - README.md - project overview and evolving technical documentation
 - man_1_simple_shell - manual page for the Simple Shell project
 - AUTHORS - project contributors
-- shell.c - Simple Shell 0.2 parsing, execution loop, and process handling
+- shell.c - Simple Shell 0.3 parsing, execution loop, and process handling
+- path.c - command resolution through PATH
 - shell.h - shared declarations and required headers
 
 ## Authors

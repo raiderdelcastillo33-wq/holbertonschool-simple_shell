@@ -19,7 +19,6 @@ char **parse_arguments(char *line)
 		return (NULL);
 
 	token = strtok(line, " \t");
-
 	while (token != NULL)
 	{
 		if (count + 1 >= capacity)
@@ -33,9 +32,7 @@ char **parse_arguments(char *line)
 			}
 			args = new_args;
 		}
-
-		args[count] = token;
-		count++;
+		args[count++] = token;
 		token = strtok(NULL, " \t");
 	}
 
@@ -77,7 +74,6 @@ int execute_command(char **args, char *program_name)
 
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
-
 	if (WIFSIGNALED(status))
 		return (128 + WTERMSIG(status));
 
@@ -85,7 +81,7 @@ int execute_command(char **args, char *program_name)
 }
 
 /**
- * process_line - parses and executes one command line
+ * process_line - parses, resolves and executes one command line
  * @line: command line to process
  * @program_name: shell program name used for errors
  * @last_status: status before processing the current line
@@ -95,6 +91,7 @@ int execute_command(char **args, char *program_name)
 static int process_line(char *line, char *program_name, int last_status)
 {
 	char **args;
+	char *resolved;
 	int status;
 
 	args = parse_arguments(line);
@@ -103,14 +100,23 @@ static int process_line(char *line, char *program_name, int last_status)
 		perror(program_name);
 		return (1);
 	}
-
 	if (args[0] == NULL)
 	{
 		free(args);
 		return (last_status);
 	}
 
+	resolved = resolve_command(args[0]);
+	if (resolved == NULL)
+	{
+		fprintf(stderr, "%s: %s: not found\n", program_name, args[0]);
+		free(args);
+		return (127);
+	}
+
+	args[0] = resolved;
 	status = execute_command(args, program_name);
+	free(resolved);
 	free(args);
 	return (status);
 }

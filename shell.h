@@ -11,6 +11,7 @@
 extern char **environ;
 
 char **parse_arguments(char *line);
+char *resolve_command(char *command);
 int execute_command(char **args, char *program_name);
 
 #endif
