@@ -1,5 +1,7 @@
 #include "shell.h"
 
+#define SHELL_EXIT 256
+
 /**
  * parse_arguments - splits a command line into arguments
  * @line: command line to parse
@@ -106,6 +108,12 @@ static int process_line(char *line, char *program_name, int last_status)
 		return (last_status);
 	}
 
+	if (strcmp(args[0], "exit") == 0)
+	{
+		free(args);
+		return (SHELL_EXIT);
+	}
+
 	resolved = resolve_command(args[0]);
 	if (resolved == NULL)
 	{
@@ -135,6 +143,7 @@ int main(int argc, char **argv)
 	ssize_t read_count;
 	int interactive;
 	int last_status = 0;
+	int command_status;
 
 	(void)argc;
 	interactive = isatty(STDIN_FILENO);
@@ -154,7 +163,11 @@ int main(int argc, char **argv)
 		if (read_count > 0 && line[read_count - 1] == '\n')
 			line[read_count - 1] = '\0';
 
-		last_status = process_line(line, argv[0], last_status);
+		command_status = process_line(line, argv[0], last_status);
+		if (command_status == SHELL_EXIT)
+			break;
+
+		last_status = command_status;
 	}
 
 	free(line);
