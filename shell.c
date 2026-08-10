@@ -1,6 +1,7 @@
 #include "shell.h"
 
 
+
 /**
  * parse_arguments - splits a command line into arguments
  * @line: command line to parse
@@ -63,16 +64,20 @@ int execute_command(char **args, char *program_name)
 
 	if (child == 0)
 	{
+		signal(SIGINT, SIG_DFL);
 		execve(args[0], args, environ);
 		perror(program_name);
 		_exit(127);
 	}
 
+	ignore_shell_sigint();
 	if (waitpid(child, &status, 0) == -1)
 	{
+		install_shell_sigint();
 		perror(program_name);
 		return (-1);
 	}
+	install_shell_sigint();
 
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
@@ -173,13 +178,12 @@ int main(int argc, char **argv)
 {
 	char *line = NULL;
 	ssize_t read_count;
-	int interactive;
 	int last_status = 0, exit_status = 0, command_status;
 	(void)argc;
-	interactive = isatty(STDIN_FILENO);
+	install_shell_sigint();
 	while (1)
 	{
-		if (interactive)
+		if (isatty(STDIN_FILENO))
 		{
 			printf("#cisfun$ ");
 			fflush(stdout);

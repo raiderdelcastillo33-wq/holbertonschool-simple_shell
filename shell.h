@@ -9,12 +9,15 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <signal.h>
 
 extern char **environ;
 
 char **parse_arguments(char *line);
 char *resolve_command(char *command);
 int execute_command(char **args, char *program_name);
+void install_shell_sigint(void);
+void ignore_shell_sigint(void);
 
 ssize_t shell_getline(char **line);
 int handle_exit(char **args, char *program_name,

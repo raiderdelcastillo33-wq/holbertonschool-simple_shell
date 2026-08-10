@@ -94,6 +94,9 @@ The current implementation can:
 - handle the built-in `env` command
 - print the current environment, one variable per line
 - handle `exit` and `env` internally before command lookup through `PATH`
+- survive `Ctrl+C` (`SIGINT`) while waiting for interactive input
+- interrupt external child commands with `Ctrl+C` without terminating the shell
+- temporarily ignore `SIGINT` in the parent while waiting for a child process
 
 At this stage the built-ins implemented for Simple Shell 1.0 are `exit` and
 `env`. Other built-in commands belong to later project requirements and are
@@ -109,6 +112,7 @@ This repository currently contains:
 - shell.c - Simple Shell parsing, built-in exit and env handling, execution loop, and process handling
 - input.c - custom buffered line input based on `read`, with persistent `static` buffer state
 - path.c - command resolution through PATH
+- signals.c - interactive `SIGINT` handling and parent signal-state control
 - shell.h - shared declarations and required headers
 
 ## Authors
