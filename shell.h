@@ -14,4 +14,6 @@ char **parse_arguments(char *line);
 char *resolve_command(char *command);
 int execute_command(char **args, char *program_name);
 
+ssize_t shell_getline(char **line);
+
 #endif

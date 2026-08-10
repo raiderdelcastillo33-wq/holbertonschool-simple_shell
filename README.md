@@ -72,7 +72,8 @@ The current implementation can:
 
 - run in interactive and non-interactive mode
 - display the `#cisfun$ ` prompt in interactive mode
-- read command lines with `getline`
+- read command lines with a custom buffered reader built on `read`
+- preserve unread input between calls with internal `static` buffer state
 - split command lines into arguments
 - build a NULL-terminated argument vector for `execve`
 - execute commands provided with their full path
@@ -102,7 +103,8 @@ This repository currently contains:
 - README.md - project overview and evolving technical documentation
 - man_1_simple_shell - manual page for the Simple Shell project
 - AUTHORS - project contributors
-- shell.c - Simple Shell 1.0 parsing, built-in exit and env handling, execution loop, and process handling
+- shell.c - Simple Shell parsing, built-in exit and env handling, execution loop, and process handling
+- input.c - custom buffered line input based on `read`, with persistent `static` buffer state
 - path.c - command resolution through PATH
 - shell.h - shared declarations and required headers
 

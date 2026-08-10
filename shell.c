@@ -166,12 +166,10 @@ static int process_line(char *line, char *program_name, int last_status)
 int main(int argc, char **argv)
 {
 	char *line = NULL;
-	size_t size = 0;
 	ssize_t read_count;
 	int interactive;
 	int last_status = 0;
 	int command_status;
-
 	(void)argc;
 	interactive = isatty(STDIN_FILENO);
 
@@ -183,14 +181,22 @@ int main(int argc, char **argv)
 			fflush(stdout);
 		}
 
-		read_count = getline(&line, &size, stdin);
+		read_count = shell_getline(&line);
 		if (read_count == -1)
+		{
+			perror(argv[0]);
+			last_status = 1;
+			break;
+		}
+		if (read_count == 0)
 			break;
 
 		if (read_count > 0 && line[read_count - 1] == '\n')
 			line[read_count - 1] = '\0';
 
 		command_status = process_line(line, argv[0], last_status);
+		free(line);
+		line = NULL;
 		if (command_status == SHELL_EXIT)
 			break;
 
