@@ -74,10 +74,10 @@ The current implementation can:
 - display the `#cisfun$ ` prompt in interactive mode
 - read command lines with a custom buffered reader built on `read`
 - preserve unread input between calls with internal `static` buffer state
-- split command lines into arguments
+- split command lines into arguments with custom parsing logic without `strtok`
 - build a NULL-terminated argument vector for `execve`
 - execute commands provided with their full path
-- resolve commands through the `PATH` environment variable
+- resolve commands through the `PATH` environment variable with manual `:`-separated traversal without `strtok`
 - pass command arguments and options to executed programs
 - avoid creating a child process when a command cannot be resolved
 - create a child process with `fork` only for a valid executable command

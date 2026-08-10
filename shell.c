@@ -11,8 +11,7 @@
 char **parse_arguments(char *line)
 {
 	char **args;
-	char **new_args;
-	char *token;
+	char *cursor;
 	size_t count = 0;
 	size_t capacity = 8;
 
@@ -20,24 +19,26 @@ char **parse_arguments(char *line)
 	if (args == NULL)
 		return (NULL);
 
-	token = strtok(line, " \t");
-	while (token != NULL)
+	cursor = line;
+	while (*cursor != '\0')
 	{
+		while (*cursor == ' ' || *cursor == '\t')
+			cursor++;
+		if (*cursor == '\0')
+			break;
 		if (count + 1 >= capacity)
 		{
 			capacity *= 2;
-			new_args = realloc(args, sizeof(char *) * capacity);
-			if (new_args == NULL)
-			{
-				free(args);
+			args = realloc(args, sizeof(char *) * capacity);
+			if (args == NULL)
 				return (NULL);
-			}
-			args = new_args;
 		}
-		args[count++] = token;
-		token = strtok(NULL, " \t");
+		args[count++] = cursor;
+		while (*cursor != '\0' && *cursor != ' ' && *cursor != '\t')
+			cursor++;
+		if (*cursor != '\0')
+			*cursor++ = '\0';
 	}
-
 	args[count] = NULL;
 	return (args);
 }

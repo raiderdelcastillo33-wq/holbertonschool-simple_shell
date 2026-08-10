@@ -52,23 +52,32 @@ static char *build_path(const char *directory, const char *command)
 static char *search_path(char *path, char *command)
 {
 	char *directory;
+	char *end;
 	char *candidate;
+	char separator;
 
-	directory = strtok(path, ":");
-
-	while (directory != NULL)
+	directory = path;
+	while (*directory != '\0')
 	{
+		while (*directory == ':')
+			directory++;
+		if (*directory == '\0')
+			break;
+		end = directory;
+		while (*end != '\0' && *end != ':')
+			end++;
+		separator = *end;
+		*end = '\0';
 		candidate = build_path(directory, command);
 		if (candidate == NULL)
 			return (NULL);
-
 		if (access(candidate, X_OK) == 0)
 			return (candidate);
-
 		free(candidate);
-		directory = strtok(NULL, ":");
+		if (separator == '\0')
+			break;
+		directory = end + 1;
 	}
-
 	return (NULL);
 }
 
