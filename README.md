@@ -93,14 +93,21 @@ The current implementation can:
 - reject extra `exit` arguments without terminating the shell immediately
 - handle the built-in `env` command
 - print the current environment, one variable per line
-- handle `exit` and `env` internally before command lookup through `PATH`
+- handle the built-in `setenv VARIABLE VALUE` command
+- create or replace environment variables inside the running shell
+- handle the built-in `unsetenv VARIABLE` command
+- remove environment variables inside the running shell
+- preserve environment changes for subsequent commands in the same shell session
+- apply changes to `PATH` immediately to later command resolution
+- handle `exit`, `env`, `setenv`, and `unsetenv` internally before command lookup through `PATH`
 - survive `Ctrl+C` (`SIGINT`) while waiting for interactive input
 - interrupt external child commands with `Ctrl+C` without terminating the shell
 - temporarily ignore `SIGINT` in the parent while waiting for a child process
 
-At this stage the built-ins implemented for Simple Shell 1.0 are `exit` and
-`env`. Other built-in commands belong to later project requirements and are
-not documented as implemented yet.
+At this stage the implemented built-ins are `exit`, `env`, `setenv`, and
+`unsetenv`. Environment changes made with `setenv` and `unsetenv` persist
+inside the running shell and are used by later command execution and `PATH`
+resolution.
 
 ## Documentation
 
@@ -109,9 +116,10 @@ This repository currently contains:
 - README.md - project overview and evolving technical documentation
 - man_1_simple_shell - manual page for the Simple Shell project
 - AUTHORS - project contributors
-- shell.c - Simple Shell parsing, built-in exit and env handling, execution loop, and process handling
+- shell.c - Simple Shell parsing, built-in dispatch, execution loop, and process handling
 - input.c - custom buffered line input based on `read`, with persistent `static` buffer state
 - path.c - command resolution through PATH
+- env.c - `setenv` and `unsetenv` handling plus shell-owned environment memory management
 - signals.c - interactive `SIGINT` handling and parent signal-state control
 - shell.h - shared declarations and required headers
 

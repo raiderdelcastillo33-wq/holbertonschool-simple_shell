@@ -23,4 +23,8 @@ ssize_t shell_getline(char **line);
 int handle_exit(char **args, char *program_name,
 	int last_status, int *exit_status);
 
+int handle_setenv(char **args, char *program_name);
+int handle_unsetenv(char **args, char *program_name);
+void free_shell_env(void);
+
 #endif

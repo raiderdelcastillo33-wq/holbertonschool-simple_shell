@@ -114,6 +114,10 @@ static int handle_builtin(char **args, char *program_name,
 		return (0);
 	}
 
+	if (strcmp(args[0], "setenv") == 0)
+		return (handle_setenv(args, program_name));
+	if (strcmp(args[0], "unsetenv") == 0)
+		return (handle_unsetenv(args, program_name));
 	return (-1);
 }
 
@@ -210,5 +214,6 @@ int main(int argc, char **argv)
 		last_status = command_status;
 	}
 	free(line);
+	free_shell_env();
 	return (last_status);
 }
