@@ -196,6 +196,7 @@ int main(int argc, char **argv)
 			break;
 		if (read_count > 0 && line[read_count - 1] == '\n')
 			line[read_count - 1] = '\0';
+		strip_comment(line);
 		command_status = process_sequence(line, argv[0], last_status,
 						  &exit_status);
 		free(line);

@@ -121,6 +121,7 @@ The current implementation can:
 - replace the value of an existing alias
 - expand `$?` to the exit status of the last command executed
 - expand `$$` to the process ID of the running shell
+- ignore comments beginning with `#` until the end of the current input line
 - expand multiple `$?` or `$$` occurrences in the same command line
 - preserve unsupported `$` forms literally instead of treating them as general environment-variable expansion
 
@@ -134,7 +135,8 @@ and can be queried, listed, or redefined. The shell also expands `$?` to the
 status of the last command that actually executed and `$$` to the process ID
 of the running shell. Multiple occurrences of these special variables are
 expanded consistently within the same command line. General `$VAR` environment
-variable expansion is not currently implemented.
+variable expansion is not currently implemented. Comment text beginning with
+`#` is ignored before command sequencing and execution.
 
 ## Documentation
 
@@ -153,6 +155,7 @@ This repository currently contains:
 - alias.c - alias storage, lookup, printing, replacement, and cleanup
 - alias_parse.c - parsing and handling of raw `alias` command input
 - variables.c - expansion of `$?` and `$$`, plus preparation and execution of expanded arguments
+- comments.c - removal of shell comments beginning with `#`
 - shell.h - shared declarations, alias structure, and required headers
 
 ## Authors

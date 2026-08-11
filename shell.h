@@ -20,6 +20,7 @@ void install_shell_sigint(void);
 void ignore_shell_sigint(void);
 
 ssize_t shell_getline(char **line);
+void strip_comment(char *line);
 int handle_exit(char **args, char *program_name,
 	int last_status, int *exit_status);
 
