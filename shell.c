@@ -180,18 +180,17 @@ int main(int argc, char **argv)
 {
 	char *line = NULL;
 	ssize_t read_count;
-	int last_status = 0, exit_status = 0, command_status;
-	(void)argc;
+	int last_status = 0, exit_status = 0;
+	int command_status, input_fd, interactive;
+
+	if (setup_input(argc, argv, &input_fd, &interactive) != 0)
+		return (1);
 	install_shell_sigint();
 	load_history();
 	while (1)
 	{
-		if (isatty(STDIN_FILENO))
-		{
-			printf("#cisfun$ ");
-			fflush(stdout);
-		}
-		read_count = shell_getline(&line);
+		show_prompt(interactive);
+		read_count = shell_getline(&line, input_fd);
 		if (read_count == -1)
 		{
 			perror(argv[0]);
@@ -215,6 +214,7 @@ int main(int argc, char **argv)
 		}
 		last_status = command_status;
 	}
+	close_input(input_fd);
 	cleanup_shell(line);
 	return (last_status);
 }

@@ -73,6 +73,10 @@ The current implementation can:
 - run in interactive and non-interactive mode
 - display the `#cisfun$ ` prompt in interactive mode
 - read command lines with a custom buffered reader built on `read`
+- execute commands from a file with `simple_shell [filename]`
+- suppress the prompt while executing commands from a file
+- stop at end-of-file without falling back to standard input
+- stop processing later file commands when a valid `exit` command is encountered
 - preserve unread input between calls with internal `static` buffer state
 - split command lines into arguments with custom parsing logic without `strtok`
 - build a NULL-terminated argument vector for `execve`
@@ -85,6 +89,7 @@ The current implementation can:
 - wait for the child process with `waitpid`
 - propagate the child process exit status
 - handle empty input lines and end-of-file input
+- execute a final file command even when the last line has no trailing newline
 - handle the built-in `exit` command with or without a numeric status argument
 - stop the shell immediately when a valid `exit` command is entered
 - preserve the last command status when leaving through `exit` without an argument
@@ -155,6 +160,13 @@ expanded consistently within the same command line. General `$VAR` environment
 variable expansion is not currently implemented. Comment text beginning with
 `#` is ignored before command sequencing and execution.
 
+The shell can also execute commands from a file with `simple_shell [filename]`.
+In file-input mode, the file is the only command source: no prompt is displayed,
+commands are processed line by line through the same parsing, built-in, history,
+sequence, variable, comment, and execution pipeline, and reaching end-of-file
+does not fall back to standard input. A valid `exit` command stops processing
+any later commands in the file.
+
 ## Documentation
 
 This repository currently contains:
@@ -164,7 +176,8 @@ This repository currently contains:
 - AUTHORS - project contributors
 - shell.c - Simple Shell parsing, built-in dispatch, execution loop, process handling, and history integration
 - builtins.c - built-in command handling for `exit` and `help`
-- input.c - custom buffered line input based on `read`, with persistent `static` buffer state
+- input.c - custom buffered line input based on `read`, with persistent `static` buffer state and an explicit input file descriptor
+- input_source.c - input-source selection, file opening, prompt control, and descriptor cleanup for standard-input and file-input modes
 - path.c - command resolution through PATH
 - env.c - `setenv` and `unsetenv` handling plus shell-owned environment memory management
 - cd.c - `cd` handling, directory changes, and `PWD`/`OLDPWD` synchronization

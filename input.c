@@ -32,19 +32,20 @@ static int append_character(char **line, size_t *length,
 }
 
 /**
- * refill_buffer - reads a block from standard input
+ * refill_buffer - reads a block from an input descriptor
  * @buffer: input buffer
  * @position: current buffer position
  * @available: valid bytes in the buffer
+ * @fd: input file descriptor
  *
  * Return: number of bytes read, 0 on EOF, or -1 on error
  */
 static ssize_t refill_buffer(char *buffer, size_t *position,
-	size_t *available)
+	size_t *available, int fd)
 {
 	ssize_t count;
 
-	count = read(STDIN_FILENO, buffer, INPUT_BUFFER_SIZE);
+	count = read(fd, buffer, INPUT_BUFFER_SIZE);
 	if (count > 0)
 	{
 		*position = 0;
@@ -76,12 +77,13 @@ static ssize_t finish_line(char **line, char *result, size_t length)
 }
 
 /**
- * shell_getline - reads one logical line from standard input
+ * shell_getline - reads one logical line from an input descriptor
  * @line: destination pointer for the allocated line
+ * @fd: input file descriptor
  *
  * Return: line length, 0 on EOF, or -1 on failure
  */
-ssize_t shell_getline(char **line)
+ssize_t shell_getline(char **line, int fd)
 {
 	static char buffer[INPUT_BUFFER_SIZE];
 	static size_t position;
@@ -102,7 +104,7 @@ ssize_t shell_getline(char **line)
 	{
 		if (position >= available)
 		{
-			count = refill_buffer(buffer, &position, &available);
+			count = refill_buffer(buffer, &position, &available, fd);
 			if (count == -1)
 			{
 				free(result);
