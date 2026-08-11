@@ -113,12 +113,20 @@ The current implementation can:
 - support logical command chaining with `&&` and `||`
 - short-circuit `&&` after a failed command and `||` after a successful command
 - evaluate mixed `&&` and `||` chains from left to right while preserving the status of the last command actually executed
+- handle the built-in `alias` command
+- create aliases with `alias name='value'`
+- preserve alias values containing spaces when they are enclosed in single quotes
+- query one or more aliases by name
+- list all aliases defined during the current shell session
+- replace the value of an existing alias
 
 At this stage the implemented built-ins are `exit`, `env`, `setenv`,
-`unsetenv`, and `cd`. Environment changes made with `setenv` and `unsetenv`
-persist inside the running shell and are used by later command execution and
-`PATH` resolution. Successful `cd` operations update `PWD` and `OLDPWD`, while
-`cd` without an argument uses `HOME` and `cd -` uses `OLDPWD`.
+`unsetenv`, `cd`, and `alias`. Environment changes made with `setenv` and
+`unsetenv` persist inside the running shell and are used by later command
+execution and `PATH` resolution. Successful `cd` operations update `PWD` and
+`OLDPWD`, while `cd` without an argument uses `HOME` and `cd -` uses `OLDPWD`.
+Aliases created with `alias` remain available during the current shell session
+and can be queried, listed, or redefined.
 
 ## Documentation
 
@@ -134,7 +142,9 @@ This repository currently contains:
 - cd.c - `cd` handling, directory changes, and `PWD`/`OLDPWD` synchronization
 - signals.c - interactive `SIGINT` handling and parent signal-state control
 - sequence.c - sequential and logical execution of commands using `;`, `&&`, and `||`
-- shell.h - shared declarations and required headers
+- alias.c - alias storage, lookup, printing, replacement, and cleanup
+- alias_parse.c - parsing and handling of raw `alias` command input
+- shell.h - shared declarations, alias structure, and required headers
 
 ## Authors
 

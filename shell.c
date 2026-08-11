@@ -139,6 +139,10 @@ int process_line(char *line, char *program_name, int last_status,
 	char *resolved;
 	int status;
 
+	if (strncmp(line, "alias", 5) == 0 &&
+	    (line[5] == '\0' || line[5] == ' ' || line[5] == '\t'))
+		return (handle_alias_line(line));
+
 	args = parse_arguments(line);
 	if (args == NULL)
 	{
@@ -217,6 +221,7 @@ int main(int argc, char **argv)
 		last_status = command_status;
 	}
 	free(line);
+	free_aliases();
 	free_shell_env();
 	return (last_status);
 }

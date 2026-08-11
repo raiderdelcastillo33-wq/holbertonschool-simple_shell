@@ -26,7 +26,25 @@ int handle_exit(char **args, char *program_name,
 int handle_setenv(char **args, char *program_name);
 int handle_unsetenv(char **args, char *program_name);
 void free_shell_env(void);
+/**
+ * struct alias_s - stores one shell alias
+ * @name: alias name
+ * @value: alias replacement value
+ * @next: next alias in the list
+ */
+typedef struct alias_s
+{
+	char *name;
+	char *value;
+	struct alias_s *next;
+} alias_t;
+
 int handle_cd(char **args, char *program_name);
+int set_alias_value(const char *name, const char *value);
+void print_alias(const char *name);
+void print_all_aliases(void);
+int handle_alias_line(char *line);
+void free_aliases(void);
 
 int process_line(char *line, char *program_name, int last_status,
 		 int *exit_status);
