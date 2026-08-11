@@ -115,6 +115,11 @@ The current implementation can:
 - evaluate mixed `&&` and `||` chains from left to right while preserving the status of the last command actually executed
 - handle the built-in `alias` command
 - handle the built-in `help` command
+- handle the built-in `history` command
+- load persistent command history from `$HOME/.simple_shell_history`
+- record each non-empty input line exactly once in the command history
+- display history entries with visible line numbers
+- persist commands without line numbers when the shell exits
 - display general built-in help with `help`
 - display specific built-in help with `help BUILTIN`
 - report an error for unknown help topics or extra help arguments
@@ -130,7 +135,7 @@ The current implementation can:
 - preserve unsupported `$` forms literally instead of treating them as general environment-variable expansion
 
 At this stage the implemented built-ins are `exit`, `env`, `setenv`,
-`unsetenv`, `cd`, `alias`, and `help`. Environment changes made with `setenv` and
+`unsetenv`, `cd`, `alias`, `help`, and `history`. Environment changes made with `setenv` and
 `unsetenv` persist inside the running shell and are used by later command
 execution and `PATH` resolution. Successful `cd` operations update `PWD` and
 `OLDPWD`, while `cd` without an argument uses `HOME` and `cd -` uses `OLDPWD`.
@@ -138,7 +143,12 @@ Aliases created with `alias` remain available during the current shell session
 and can be queried, listed, or redefined. The `help` built-in displays general
 help without arguments and specific help for `exit`, `env`, `setenv`,
 `unsetenv`, `cd`, `alias`, and `help`. Unknown topics and extra arguments are
-reported as errors. The shell also expands `$?` to the
+reported as errors. The `history` built-in displays the in-memory command
+history with visible line numbers. The shell loads persistent history from
+`$HOME/.simple_shell_history` at startup and writes commands back to that
+file without line numbers when it exits. Each non-empty input line is
+recorded once before command sequencing is evaluated. The shell also expands
+`$?` to the
 status of the last command that actually executed and `$$` to the process ID
 of the running shell. Multiple occurrences of these special variables are
 expanded consistently within the same command line. General `$VAR` environment
@@ -152,7 +162,7 @@ This repository currently contains:
 - README.md - project overview and evolving technical documentation
 - man_1_simple_shell - manual page for the Simple Shell project
 - AUTHORS - project contributors
-- shell.c - Simple Shell parsing, built-in dispatch, execution loop, and process handling
+- shell.c - Simple Shell parsing, built-in dispatch, execution loop, process handling, and history integration
 - builtins.c - built-in command handling for `exit` and `help`
 - input.c - custom buffered line input based on `read`, with persistent `static` buffer state
 - path.c - command resolution through PATH
@@ -164,7 +174,9 @@ This repository currently contains:
 - alias_parse.c - parsing and handling of raw `alias` command input
 - variables.c - expansion of `$?` and `$$`, plus preparation and execution of expanded arguments
 - comments.c - removal of shell comments beginning with `#`
-- shell.h - shared declarations, alias structure, and required headers
+- history.c - persistent command history loading, storage, display, saving, and cleanup
+- shell_cleanup.c - shared final resource cleanup, including history persistence
+- shell.h - shared declarations, alias and history structures, and required headers
 
 ## Authors
 

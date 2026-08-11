@@ -58,4 +58,24 @@ int process_line(char *line, char *program_name, int last_status,
 int process_sequence(char *line, char *program_name, int last_status,
 		     int *exit_status);
 
+/**
+ * struct history_s - stores one shell history entry
+ * @command: stored command
+ * @number: visible history number
+ * @next: next history entry
+ */
+typedef struct history_s
+{
+	char *command;
+	unsigned long number;
+	struct history_s *next;
+} history_t;
+
+int load_history(void);
+int add_history(const char *line);
+int handle_history(char **args, char *program_name);
+int save_history(void);
+void free_history(void);
+void cleanup_shell(char *line);
+
 #endif

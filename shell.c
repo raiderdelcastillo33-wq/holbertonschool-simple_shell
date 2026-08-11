@@ -123,6 +123,8 @@ static int handle_builtin(char **args, char *program_name,
 		return (handle_cd(args, program_name));
 	if (strcmp(args[0], "help") == 0)
 		return (handle_help(args, program_name));
+	if (strcmp(args[0], "history") == 0)
+		return (handle_history(args, program_name));
 	return (-1);
 }
 
@@ -181,6 +183,7 @@ int main(int argc, char **argv)
 	int last_status = 0, exit_status = 0, command_status;
 	(void)argc;
 	install_shell_sigint();
+	load_history();
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
@@ -199,6 +202,7 @@ int main(int argc, char **argv)
 			break;
 		if (read_count > 0 && line[read_count - 1] == '\n')
 			line[read_count - 1] = '\0';
+		add_history(line);
 		strip_comment(line);
 		command_status = process_sequence(line, argv[0], last_status,
 						  &exit_status);
@@ -211,8 +215,6 @@ int main(int argc, char **argv)
 		}
 		last_status = command_status;
 	}
-	free(line);
-	free_aliases();
-	free_shell_env();
+	cleanup_shell(line);
 	return (last_status);
 }
