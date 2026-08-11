@@ -99,15 +99,21 @@ The current implementation can:
 - remove environment variables inside the running shell
 - preserve environment changes for subsequent commands in the same shell session
 - apply changes to `PATH` immediately to later command resolution
-- handle `exit`, `env`, `setenv`, and `unsetenv` internally before command lookup through `PATH`
+- handle the built-in `cd` command
+- change to an explicit directory with `cd DIRECTORY`
+- use `HOME` when `cd` is called without an argument
+- support `cd -` using `OLDPWD` and print the destination directory
+- update `PWD` and `OLDPWD` after successful directory changes
+- handle `exit`, `env`, `setenv`, `unsetenv`, and `cd` internally before command lookup through `PATH`
 - survive `Ctrl+C` (`SIGINT`) while waiting for interactive input
 - interrupt external child commands with `Ctrl+C` without terminating the shell
 - temporarily ignore `SIGINT` in the parent while waiting for a child process
 
-At this stage the implemented built-ins are `exit`, `env`, `setenv`, and
-`unsetenv`. Environment changes made with `setenv` and `unsetenv` persist
-inside the running shell and are used by later command execution and `PATH`
-resolution.
+At this stage the implemented built-ins are `exit`, `env`, `setenv`,
+`unsetenv`, and `cd`. Environment changes made with `setenv` and `unsetenv`
+persist inside the running shell and are used by later command execution and
+`PATH` resolution. Successful `cd` operations update `PWD` and `OLDPWD`, while
+`cd` without an argument uses `HOME` and `cd -` uses `OLDPWD`.
 
 ## Documentation
 
@@ -120,6 +126,7 @@ This repository currently contains:
 - input.c - custom buffered line input based on `read`, with persistent `static` buffer state
 - path.c - command resolution through PATH
 - env.c - `setenv` and `unsetenv` handling plus shell-owned environment memory management
+- cd.c - `cd` handling, directory changes, and `PWD`/`OLDPWD` synchronization
 - signals.c - interactive `SIGINT` handling and parent signal-state control
 - shell.h - shared declarations and required headers
 

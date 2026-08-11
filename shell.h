@@ -26,5 +26,6 @@ int handle_exit(char **args, char *program_name,
 int handle_setenv(char **args, char *program_name);
 int handle_unsetenv(char **args, char *program_name);
 void free_shell_env(void);
+int handle_cd(char **args, char *program_name);
 
 #endif

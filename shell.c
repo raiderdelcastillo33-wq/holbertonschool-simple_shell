@@ -118,6 +118,8 @@ static int handle_builtin(char **args, char *program_name,
 		return (handle_setenv(args, program_name));
 	if (strcmp(args[0], "unsetenv") == 0)
 		return (handle_unsetenv(args, program_name));
+	if (strcmp(args[0], "cd") == 0)
+		return (handle_cd(args, program_name));
 	return (-1);
 }
 
