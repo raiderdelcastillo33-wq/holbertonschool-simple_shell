@@ -70,3 +70,80 @@ int handle_exit(char **args, char *program_name,
 	}
 	return (SHELL_EXIT);
 }
+
+/**
+ * print_general_help - prints the general built-in help
+ */
+static void print_general_help(void)
+{
+	printf("Simple Shell built-ins:\n");
+	printf("  exit [STATUS]\n");
+	printf("  env\n");
+	printf("  setenv VARIABLE VALUE\n");
+	printf("  unsetenv VARIABLE\n");
+	printf("  cd [DIRECTORY]\n");
+	printf("  alias [name[='value'] ...]\n");
+	printf("  help [BUILTIN]\n");
+	printf("Use: help [BUILTIN]\n");
+}
+
+/**
+ * print_builtin_help - prints help for one built-in
+ * @name: built-in command name
+ *
+ * Return: 0 when help exists, 1 otherwise
+ */
+static int print_builtin_help(const char *name)
+{
+	static const char * const names[] = {
+		"exit", "env", "setenv", "unsetenv",
+		"cd", "alias", "help", NULL
+	};
+	static const char * const texts[] = {
+		"exit [STATUS] - exit the shell",
+		"env - print the current environment",
+		"setenv VARIABLE VALUE - create or replace a variable",
+		"unsetenv VARIABLE - remove an environment variable",
+		"cd [DIRECTORY] - change the current directory",
+		"alias [name[='value'] ...] - define or display aliases",
+		"help [BUILTIN] - display built-in help"
+	};
+	int index;
+
+	for (index = 0; names[index] != NULL; index++)
+	{
+		if (strcmp(name, names[index]) == 0)
+		{
+			printf("%s\n", texts[index]);
+			return (0);
+		}
+	}
+	return (1);
+}
+
+/**
+ * handle_help - handles the help built-in command
+ * @args: shell argument vector
+ * @program_name: shell program name used in errors
+ *
+ * Return: 0 on success, 1 on invalid usage or unknown topic
+ */
+int handle_help(char **args, char *program_name)
+{
+	if (args[1] == NULL)
+	{
+		print_general_help();
+		return (0);
+	}
+	if (args[2] != NULL)
+	{
+		fprintf(stderr, "%s: help: too many arguments\n", program_name);
+		return (1);
+	}
+	if (print_builtin_help(args[1]) == 0)
+		return (0);
+
+	fprintf(stderr, "%s: help: no help for %s\n",
+		program_name, args[1]);
+	return (1);
+}

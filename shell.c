@@ -55,6 +55,7 @@ int execute_command(char **args, char *program_name)
 	pid_t child;
 	int status;
 
+	fflush(stdout);
 	child = fork();
 	if (child == -1)
 	{
@@ -120,6 +121,8 @@ static int handle_builtin(char **args, char *program_name,
 		return (handle_unsetenv(args, program_name));
 	if (strcmp(args[0], "cd") == 0)
 		return (handle_cd(args, program_name));
+	if (strcmp(args[0], "help") == 0)
+		return (handle_help(args, program_name));
 	return (-1);
 }
 

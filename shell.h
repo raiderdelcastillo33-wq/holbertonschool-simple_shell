@@ -23,6 +23,7 @@ ssize_t shell_getline(char **line);
 void strip_comment(char *line);
 int handle_exit(char **args, char *program_name,
 	int last_status, int *exit_status);
+int handle_help(char **args, char *program_name);
 
 int handle_setenv(char **args, char *program_name);
 int handle_unsetenv(char **args, char *program_name);
