@@ -136,22 +136,20 @@ int process_line(char *line, char *program_name, int last_status,
 	int *exit_status)
 {
 	char **args;
-	char *resolved;
+	char *expanded;
 	int status;
 
 	if (strncmp(line, "alias", 5) == 0 &&
 	    (line[5] == '\0' || line[5] == ' ' || line[5] == '\t'))
 		return (handle_alias_line(line));
 
-	args = parse_arguments(line);
+	args = prepare_expanded_arguments(line, last_status, &expanded, program_name);
 	if (args == NULL)
-	{
-		perror(program_name);
 		return (1);
-	}
 	if (args[0] == NULL)
 	{
 		free(args);
+		free(expanded);
 		return (last_status);
 	}
 
@@ -159,22 +157,11 @@ int process_line(char *line, char *program_name, int last_status,
 	if (status != -1)
 	{
 		free(args);
+		free(expanded);
 		return (status);
 	}
 
-	resolved = resolve_command(args[0]);
-	if (resolved == NULL)
-	{
-		fprintf(stderr, "%s: %s: not found\n", program_name, args[0]);
-		free(args);
-		return (127);
-	}
-
-	args[0] = resolved;
-	status = execute_command(args, program_name);
-	free(resolved);
-	free(args);
-	return (status);
+	return (execute_expanded_command(args, expanded, program_name));
 }
 
 /**

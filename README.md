@@ -119,6 +119,10 @@ The current implementation can:
 - query one or more aliases by name
 - list all aliases defined during the current shell session
 - replace the value of an existing alias
+- expand `$?` to the exit status of the last command executed
+- expand `$$` to the process ID of the running shell
+- expand multiple `$?` or `$$` occurrences in the same command line
+- preserve unsupported `$` forms literally instead of treating them as general environment-variable expansion
 
 At this stage the implemented built-ins are `exit`, `env`, `setenv`,
 `unsetenv`, `cd`, and `alias`. Environment changes made with `setenv` and
@@ -126,7 +130,11 @@ At this stage the implemented built-ins are `exit`, `env`, `setenv`,
 execution and `PATH` resolution. Successful `cd` operations update `PWD` and
 `OLDPWD`, while `cd` without an argument uses `HOME` and `cd -` uses `OLDPWD`.
 Aliases created with `alias` remain available during the current shell session
-and can be queried, listed, or redefined.
+and can be queried, listed, or redefined. The shell also expands `$?` to the
+status of the last command that actually executed and `$$` to the process ID
+of the running shell. Multiple occurrences of these special variables are
+expanded consistently within the same command line. General `$VAR` environment
+variable expansion is not currently implemented.
 
 ## Documentation
 
@@ -144,6 +152,7 @@ This repository currently contains:
 - sequence.c - sequential and logical execution of commands using `;`, `&&`, and `||`
 - alias.c - alias storage, lookup, printing, replacement, and cleanup
 - alias_parse.c - parsing and handling of raw `alias` command input
+- variables.c - expansion of `$?` and `$$`, plus preparation and execution of expanded arguments
 - shell.h - shared declarations, alias structure, and required headers
 
 ## Authors
