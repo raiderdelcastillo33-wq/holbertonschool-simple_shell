@@ -74,11 +74,12 @@ static int should_execute(int operator, int status)
  * @program_name: shell program name
  * @last_status: status before the chain
  * @exit_status: status to return if exit is requested
+ * @line_number: physical input line number used in error messages
  *
  * Return: status of the last executed command or SHELL_EXIT
  */
 static int process_logical_chain(char *chain, char *program_name,
-	int last_status, int *exit_status)
+	int last_status, int *exit_status, int line_number)
 {
 	char *segment = chain, *cursor = chain, *operator_pos;
 	int status = last_status, previous = OP_NONE, operator;
@@ -92,7 +93,7 @@ static int process_logical_chain(char *chain, char *program_name,
 		    should_execute(previous, status))
 		{
 			status = process_line(segment, program_name, status,
-					      exit_status);
+					      exit_status, line_number);
 			if (status == SHELL_EXIT)
 				return (SHELL_EXIT);
 		}
@@ -111,11 +112,12 @@ static int process_logical_chain(char *chain, char *program_name,
  * @program_name: shell program name
  * @last_status: status before processing the sequence
  * @exit_status: status to return if exit is requested
+ * @line_number: physical input line number used in error messages
  *
  * Return: status of the last executed command or SHELL_EXIT
  */
 int process_sequence(char *line, char *program_name, int last_status,
-		     int *exit_status)
+		     int *exit_status, int line_number)
 {
 	char *segment = line, *cursor, *operator_pos;
 	int status = last_status, operator;
@@ -133,7 +135,8 @@ int process_sequence(char *line, char *program_name, int last_status,
 		if (segment_has_command(segment))
 		{
 			status = process_logical_chain(segment, program_name,
-						       status, exit_status);
+						       status, exit_status,
+						       line_number);
 			if (status == SHELL_EXIT)
 				return (SHELL_EXIT);
 		}

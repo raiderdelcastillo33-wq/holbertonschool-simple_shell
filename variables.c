@@ -113,10 +113,12 @@ char **prepare_expanded_arguments(const char *line, int last_status,
  * @args: parsed argument vector
  * @expanded: allocated expanded command line
  * @program_name: shell program name for error messages
+ * @line_number: physical input line number used in error messages
  *
  * Return: command exit status
  */
-int execute_expanded_command(char **args, char *expanded, char *program_name)
+int execute_expanded_command(char **args, char *expanded,
+	char *program_name, int line_number)
 {
 	char *resolved;
 	int status;
@@ -124,7 +126,8 @@ int execute_expanded_command(char **args, char *expanded, char *program_name)
 	resolved = resolve_command(args[0]);
 	if (resolved == NULL)
 	{
-		fprintf(stderr, "%s: %s: not found\n", program_name, args[0]);
+		fprintf(stderr, "%s: %d: %s: not found\n",
+			program_name, line_number, args[0]);
 		free(args);
 		free(expanded);
 		return (127);

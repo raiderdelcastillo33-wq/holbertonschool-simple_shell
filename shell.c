@@ -11,6 +11,7 @@
 char **parse_arguments(char *line)
 {
 	char **args;
+	char **new_args;
 	char *cursor;
 	size_t count = 0;
 	size_t capacity = 8;
@@ -18,7 +19,6 @@ char **parse_arguments(char *line)
 	args = malloc(sizeof(char *) * capacity);
 	if (args == NULL)
 		return (NULL);
-
 	cursor = line;
 	while (*cursor != '\0')
 	{
@@ -29,9 +29,15 @@ char **parse_arguments(char *line)
 		if (count + 1 >= capacity)
 		{
 			capacity *= 2;
-			args = realloc(args, sizeof(char *) * capacity);
-			if (args == NULL)
+			new_args = malloc(sizeof(char *) * capacity);
+			if (new_args == NULL)
+			{
+				free(args);
 				return (NULL);
+			}
+			memcpy(new_args, args, sizeof(char *) * count);
+			free(args);
+			args = new_args;
 		}
 		args[count++] = cursor;
 		while (*cursor != '\0' && *cursor != ' ' && *cursor != '\t')
@@ -135,10 +141,11 @@ static int handle_builtin(char **args, char *program_name,
  * @last_status: status before processing the current line
  *
  * @exit_status: status to return when exit is requested
+ * @line_number: physical input line number used in error messages
  * Return: resulting shell status
  */
 int process_line(char *line, char *program_name, int last_status,
-	int *exit_status)
+	int *exit_status, int line_number)
 {
 	char **args;
 	char *expanded;
@@ -166,7 +173,8 @@ int process_line(char *line, char *program_name, int last_status,
 		return (status);
 	}
 
-	return (execute_expanded_command(args, expanded, program_name));
+	return (execute_expanded_command(args, expanded,
+					 program_name, line_number));
 }
 
 /**
@@ -180,7 +188,7 @@ int main(int argc, char **argv)
 {
 	char *line = NULL;
 	ssize_t read_count;
-	int last_status = 0, exit_status = 0;
+	int last_status = 0, exit_status = 0, line_number = 0;
 	int command_status, input_fd, interactive;
 
 	if (setup_input(argc, argv, &input_fd, &interactive) != 0)
@@ -199,12 +207,13 @@ int main(int argc, char **argv)
 		}
 		if (read_count == 0)
 			break;
+		line_number++;
 		if (read_count > 0 && line[read_count - 1] == '\n')
 			line[read_count - 1] = '\0';
 		add_history(line);
 		strip_comment(line);
 		command_status = process_sequence(line, argv[0], last_status,
-						  &exit_status);
+						  &exit_status, line_number);
 		free(line);
 		line = NULL;
 		if (command_status == SHELL_EXIT)

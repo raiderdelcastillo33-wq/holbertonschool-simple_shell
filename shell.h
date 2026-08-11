@@ -54,12 +54,13 @@ void free_aliases(void);
 char *expand_variables(const char *line, int last_status);
 char **prepare_expanded_arguments(const char *line, int last_status,
 				  char **expanded, char *program_name);
-int execute_expanded_command(char **args, char *expanded, char *program_name);
+int execute_expanded_command(char **args, char *expanded,
+	char *program_name, int line_number);
 
 int process_line(char *line, char *program_name, int last_status,
-		 int *exit_status);
+		 int *exit_status, int line_number);
 int process_sequence(char *line, char *program_name, int last_status,
-		     int *exit_status);
+		     int *exit_status, int line_number);
 
 /**
  * struct history_s - stores one shell history entry

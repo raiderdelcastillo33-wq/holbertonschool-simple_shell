@@ -20,9 +20,11 @@ static int append_character(char **line, size_t *length,
 	if (*length + 1 >= *capacity)
 	{
 		*capacity *= 2;
-		new_line = realloc(*line, *capacity);
+		new_line = malloc(*capacity);
 		if (new_line == NULL)
 			return (-1);
+		memcpy(new_line, *line, *length);
+		free(*line);
 		*line = new_line;
 	}
 
