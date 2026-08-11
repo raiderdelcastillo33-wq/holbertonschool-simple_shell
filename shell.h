@@ -28,4 +28,9 @@ int handle_unsetenv(char **args, char *program_name);
 void free_shell_env(void);
 int handle_cd(char **args, char *program_name);
 
+int process_line(char *line, char *program_name, int last_status,
+		 int *exit_status);
+int process_sequence(char *line, char *program_name, int last_status,
+		     int *exit_status);
+
 #endif

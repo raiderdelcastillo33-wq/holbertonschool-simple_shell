@@ -132,7 +132,7 @@ static int handle_builtin(char **args, char *program_name,
  * @exit_status: status to return when exit is requested
  * Return: resulting shell status
  */
-static int process_line(char *line, char *program_name, int last_status,
+int process_line(char *line, char *program_name, int last_status,
 	int *exit_status)
 {
 	char **args;
@@ -205,7 +205,8 @@ int main(int argc, char **argv)
 			break;
 		if (read_count > 0 && line[read_count - 1] == '\n')
 			line[read_count - 1] = '\0';
-		command_status = process_line(line, argv[0], last_status, &exit_status);
+		command_status = process_sequence(line, argv[0], last_status,
+						  &exit_status);
 		free(line);
 		line = NULL;
 		if (command_status == SHELL_EXIT)

@@ -108,6 +108,8 @@ The current implementation can:
 - survive `Ctrl+C` (`SIGINT`) while waiting for interactive input
 - interrupt external child commands with `Ctrl+C` without terminating the shell
 - temporarily ignore `SIGINT` in the parent while waiting for a child process
+- execute multiple commands sequentially when they are separated by `;`
+- continue with later `;`-separated commands after a normal command failure, while stopping immediately if `exit` is requested
 
 At this stage the implemented built-ins are `exit`, `env`, `setenv`,
 `unsetenv`, and `cd`. Environment changes made with `setenv` and `unsetenv`
@@ -128,6 +130,7 @@ This repository currently contains:
 - env.c - `setenv` and `unsetenv` handling plus shell-owned environment memory management
 - cd.c - `cd` handling, directory changes, and `PWD`/`OLDPWD` synchronization
 - signals.c - interactive `SIGINT` handling and parent signal-state control
+- sequence.c - sequential execution of commands separated by `;`
 - shell.h - shared declarations and required headers
 
 ## Authors
